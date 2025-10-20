@@ -21,7 +21,7 @@ export function AppFooter() {
               <li><Link href="#" className="text-sm text-background/70 hover:text-background">About Us</Link></li>
               <li><Link href="#" className="text-sm text-background/70 hover:text-background">Contact</Link></li>
               <li><Link href="#" className="text-sm text-background/70 hover:text-background">FAQ</Link></li>
-              <li><Link href="/admin" className="text-sm text-background/70 hover:text-background">Admin</Link></li>
+              <li><Link href="/admin/login" className="text-sm text-background/70 hover:text-background">Admin</Link></li>
             </ul>
           </div>
           <div className="text-center md:text-right">
