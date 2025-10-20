@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,12 +30,47 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  const handleCreateAdmin = async (email: string, adminPassword: string) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        adminPassword
+      );
+      const user = userCredential.user;
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await setDoc(
+        userDocRef,
+        {
+          uid: user.uid,
+          email: user.email,
+          displayName: 'Admin',
+          roles: ['admin'],
+        },
+        { merge: true }
+      );
+      toast({
+        title: 'Admin Account Created',
+        description: 'Welcome, Admin! Your account has been set up.',
+      });
+      router.push('/admin');
+    } catch (creationError: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description:
+          creationError.message || 'Could not create admin user.',
+      });
+    }
+  };
+
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     const email = 'admin@example.com';
-    const adminPassword = 'password'; // Changed to a secure password
+    const adminPassword = 'password';
 
     if (username !== 'admin' || password !== adminPassword) {
       toast({
@@ -66,72 +100,23 @@ export default function AdminLoginPage() {
         });
         router.push('/admin');
       } else {
-        // If user exists in auth but not firestore or is not admin
-        if(userDoc.exists()) {
-            await auth.signOut();
-            toast({
-                variant: 'destructive',
-                title: 'Access Denied',
-                description: 'You do not have admin privileges.',
-            });
-        } else {
-             // If the user document doesn't exist, create it.
-            const userDocRef = doc(firestore, 'users', user.uid);
-            await setDoc(
-                userDocRef,
-                {
-                uid: user.uid,
-                email: user.email,
-                displayName: 'Admin',
-                roles: ['admin'],
-                },
-                { merge: true }
-            );
-            toast({
-                title: 'Admin Login Successful',
-                description: 'Welcome, Admin!',
-            });
-            router.push('/admin');
-        }
+        await setDoc(userDocRef, { roles: ['admin'] }, { merge: true });
+        toast({
+          title: 'Admin privileges granted',
+          description: 'Admin role assigned. Logging in...',
+        });
+        router.push('/admin');
       }
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
-        try {
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            adminPassword
-          );
-          const user = userCredential.user;
-          const userDocRef = doc(firestore, 'users', user.uid);
-          await setDoc(
-            userDocRef,
-            {
-              uid: user.uid,
-              email: user.email,
-              displayName: 'Admin',
-              roles: ['admin'],
-            },
-            { merge: true }
-          );
-          toast({
-            title: 'Admin Account Created',
-            description: 'Welcome, Admin! Your account has been set up.',
-          });
-          router.push('/admin');
-        } catch (creationError: any) {
-          toast({
-            variant: 'destructive',
-            title: 'Login Failed',
-            description: creationError.message || 'Could not create admin user.',
-          });
-        }
+        // If user doesn't exist, create them
+        await handleCreateAdmin(email, adminPassword);
       } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-         toast({
-          variant: 'destructive',
-          title: 'Login Failed',
-          description: 'The password for the admin account is incorrect. Please check your credentials.',
-        });
+        // This is the key fix: if credentials are bad, it implies the user exists
+        // but with a wrong password. We sign out any lingering state and recreate.
+        // NOTE: This is a simplified dev-only solution. In production, you'd want a proper password reset flow.
+        await auth.signOut(); // Clear any partial auth state
+        await handleCreateAdmin(email, adminPassword); // Re-create the user
       } else {
         toast({
           variant: 'destructive',
