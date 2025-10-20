@@ -1,66 +1,48 @@
-// src/firebase/firestore/use-doc.ts
-'use client';
-import {useState, useEffect, useMemo} from 'react';
-import {
-  onSnapshot,
-  doc,
-  type DocumentData,
-  type DocumentReference,
-} from 'firebase/firestore';
+"use client";
+import { useState, useEffect } from 'react';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
-import {useFirestore} from '@/firebase';
-import {errorEmitter} from '@/firebase/error-emitter';
-import {FirestorePermissionError} from '@/firebase/errors';
-
-export function useMemoDoc(
-  ...[firestore, path, ...pathSegments]: Parameters<typeof doc>
-) {
-  return useMemo(
-    () => (firestore ? doc(firestore, path, ...pathSegments) : null),
-    [firestore, path, ...pathSegments]
-  );
-}
-
-// Custom hook to fetch a single document from Firestore.
-export function useDoc<T extends DocumentData>(
-  ref: DocumentReference<T> | null,
-  options?: {
-    listen?: boolean;
-  }
-) {
+// NOTE: Firestore real-time listeners replaced by REST endpoints.
+export function useDoc<T = any>(path: string | null, id: string | null, options?: { listen?: boolean; intervalMs?: number }) {
   const listen = options?.listen ?? false;
+  const intervalMs = options?.intervalMs ?? 3000;
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!ref) {
+    if (!path || !id) {
       setLoading(false);
       return;
     }
-    setLoading(true);
 
-    const unsubscribe = onSnapshot(
-      ref,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          setData({id: snapshot.id, ...snapshot.data()} as T);
-        } else {
-          setData(null);
-        }
-        setLoading(false);
-      },
-      (error) => {
-        setLoading(false);
-        const permissionError = new FirestorePermissionError({
-          path: ref.path,
-          operation: 'get',
-        });
-        errorEmitter.emit('permission-error', permissionError);
+    let mounted = true;
+
+    const fetchOnce = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/${path}/${id}`);
+        if (!res.ok) throw new Error('Failed to fetch');
+        const payload = await res.json();
+        if (!mounted) return;
+        setData(payload.user || payload);
+      } catch (err: any) {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `${path}/${id}`, operation: 'get' }));
+      } finally {
+        if (mounted) setLoading(false);
       }
-    );
+    };
 
-    return () => unsubscribe();
-  }, [ref, listen]);
+    fetchOnce();
 
-  return {data, loading};
+    let timer: any;
+    if (listen) timer = setInterval(fetchOnce, intervalMs);
+
+    return () => {
+      mounted = false;
+      if (timer) clearInterval(timer);
+    };
+  }, [path, id, listen, intervalMs]);
+
+  return { data, loading };
 }

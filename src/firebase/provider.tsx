@@ -7,7 +7,7 @@ import {
 } from 'react';
 import type {FirebaseApp} from 'firebase/app';
 import type {Auth} from 'firebase/auth';
-import type {Firestore} from 'firebase/firestore';
+// Firestore removed - migrated to MongoDB
 
 import {initializeFirebase} from '@/firebase';
 import {FirebaseErrorListener} from '@/components/FirebaseErrorListener';
@@ -16,7 +16,7 @@ import {FirebaseErrorListener} from '@/components/FirebaseErrorListener';
 export interface FirebaseContextValue {
   firebaseApp: FirebaseApp;
   auth: Auth;
-  firestore: Firestore;
+  // firestore removed: use MongoDB APIs via server-side routes
 }
 
 // Create the Firebase context.
@@ -33,15 +33,14 @@ export const FirebaseContext = createContext<FirebaseContextValue | null>(
  * @returns {JSX.Element} The provider component.
  */
 export function FirebaseProvider({children}: PropsWithChildren) {
-  const {firebaseApp, auth, firestore} = useMemo(() => initializeFirebase(), []);
+  const {firebaseApp, auth} = useMemo(() => initializeFirebase(), []);
 
   const contextValue = useMemo(
     () => ({
       firebaseApp,
       auth,
-      firestore,
     }),
-    [firebaseApp, auth, firestore]
+    [firebaseApp, auth]
   );
 
   return (
@@ -87,5 +86,6 @@ export function useAuth() {
  * @returns {Firestore} The Firestore instance.
  */
 export function useFirestore() {
-  return useFirebase().firestore;
+  // Deprecated: Firestore is no longer used. Return null to keep compatibility
+  return null as any;
 }

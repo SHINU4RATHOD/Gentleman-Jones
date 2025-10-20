@@ -1,7 +1,7 @@
 'use client';
 import {getApps, initializeApp, type FirebaseApp} from 'firebase/app';
 import {getAuth, type Auth} from 'firebase/auth';
-import {getFirestore, type Firestore} from 'firebase/firestore';
+// Firestore removed (migrated to MongoDB). Keep Auth.
 
 import {firebaseConfig} from '@/firebase/config';
 
@@ -14,13 +14,13 @@ export * from './firestore/use-doc';
 export function initializeFirebase(): {
   firebaseApp: FirebaseApp;
   auth: Auth;
-  firestore: Firestore;
+  // firestore: Firestore | null;
 } {
   const firebaseApp =
     getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
   const auth = getAuth(firebaseApp);
-  const firestore = getFirestore(firebaseApp);
+  // Firestore is intentionally not initialized. Use MongoDB for database.
 
-  return {firebaseApp, auth, firestore};
+  return {firebaseApp, auth};
 }

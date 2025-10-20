@@ -13,20 +13,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User, Lock } from 'lucide-react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth } from '@/firebase';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+// Firestore removed; database calls are proxied to /api endpoints
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('password');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -38,17 +37,12 @@ export default function AdminLoginPage() {
         adminPassword
       );
       const user = userCredential.user;
-      const userDocRef = doc(firestore, 'users', user.uid);
-      await setDoc(
-        userDocRef,
-        {
-          uid: user.uid,
-          email: user.email,
-          displayName: 'Admin',
-          roles: ['admin'],
-        },
-        { merge: true }
-      );
+      // Create user in MongoDB via API
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: user.uid, email: user.email, displayName: 'Admin', roles: ['admin'] }),
+      });
       toast({
         title: 'Admin Account Created',
         description: 'Welcome, Admin! Your account has been set up.',
@@ -90,17 +84,23 @@ export default function AdminLoginPage() {
       );
       const user = userCredential.user;
 
-      const userDocRef = doc(firestore, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
+      // Read user from MongoDB via API
+      const res = await fetch(`/api/users/${user.uid}`);
+      const payload = await res.json();
+      const userDoc = payload.user;
 
-      if (userDoc.exists() && userDoc.data().roles?.includes('admin')) {
+      if (userDoc && userDoc.roles?.includes('admin')) {
         toast({
           title: 'Admin Login Successful',
           description: 'Welcome back, Admin!',
         });
         router.push('/admin');
       } else {
-        await setDoc(userDocRef, { roles: ['admin'] }, { merge: true });
+        await fetch(`/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid, email: user.email, roles: ['admin'] }),
+        });
         toast({
           title: 'Admin privileges granted',
           description: 'Admin role assigned. Logging in...',

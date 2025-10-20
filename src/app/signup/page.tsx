@@ -14,9 +14,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Wind } from 'lucide-react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth } from '@/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { setDoc, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SignupPage() {
@@ -26,7 +25,6 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -42,15 +40,18 @@ export default function SignupPage() {
       );
       const user = userCredential.user;
 
-      // Store user information in Firestore
-      const userDocRef = doc(firestore, 'users', user.uid);
-      await setDoc(userDocRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: `${firstName} ${lastName}`,
-        firstName,
-        lastName,
-        roles: [],
+      // Store user information in MongoDB via API
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: `${firstName} ${lastName}`,
+          firstName,
+          lastName,
+          roles: [],
+        }),
       });
 
       toast({
