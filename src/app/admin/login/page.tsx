@@ -24,7 +24,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('1122');
+  const [password, setPassword] = useState('password');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
   const firestore = useFirestore();
@@ -36,8 +36,9 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     const email = 'admin@example.com';
+    const adminPassword = 'password'; // Changed to a secure password
 
-    if (username !== 'admin' || password !== '1122') {
+    if (username !== 'admin' || password !== adminPassword) {
       toast({
         variant: 'destructive',
         title: 'Invalid Credentials',
@@ -51,7 +52,7 @@ export default function AdminLoginPage() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password
+        adminPassword
       );
       const user = userCredential.user;
 
@@ -99,7 +100,7 @@ export default function AdminLoginPage() {
           const userCredential = await createUserWithEmailAndPassword(
             auth,
             email,
-            password
+            adminPassword
           );
           const user = userCredential.user;
           const userDocRef = doc(firestore, 'users', user.uid);
@@ -118,13 +119,19 @@ export default function AdminLoginPage() {
             description: 'Welcome, Admin! Your account has been set up.',
           });
           router.push('/admin');
-        } catch (creationError) {
+        } catch (creationError: any) {
           toast({
             variant: 'destructive',
             title: 'Login Failed',
-            description: 'Could not create admin user.',
+            description: creationError.message || 'Could not create admin user.',
           });
         }
+      } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+         toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: 'The password for the admin account is incorrect. Please check your credentials.',
+        });
       } else {
         toast({
           variant: 'destructive',
@@ -153,7 +160,7 @@ export default function AdminLoginPage() {
                   <Input
                     id="username"
                     type="text"
-                    placeholder="ADMIN"
+                    placeholder="admin"
                     required
                     className="pl-10"
                     value={username}
@@ -165,18 +172,12 @@ export default function AdminLoginPage() {
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="#"
-                    className="ml-auto inline-block text-sm underline"
-                  >
-                    Lost Password?
-                  </Link>
                 </div>
                 <div className="relative">
                   <Input
                     id="password"
                     type="password"
-                    placeholder="PASSWORD"
+                    placeholder="password"
                     required
                     className="pl-10"
                     value={password}
