@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState('admin@example.com');
+  const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('1122');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
@@ -35,7 +35,9 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    if (email !== 'admin@example.com' || password !== '1122') {
+    const email = 'admin@example.com';
+
+    if (username !== 'admin' || password !== '1122') {
       toast({
         variant: 'destructive',
         title: 'Invalid Credentials',
@@ -63,12 +65,33 @@ export default function AdminLoginPage() {
         });
         router.push('/admin');
       } else {
-        await auth.signOut();
-        toast({
-          variant: 'destructive',
-          title: 'Access Denied',
-          description: 'You do not have admin privileges.',
-        });
+        // If user exists in auth but not firestore or is not admin
+        if(userDoc.exists()) {
+            await auth.signOut();
+            toast({
+                variant: 'destructive',
+                title: 'Access Denied',
+                description: 'You do not have admin privileges.',
+            });
+        } else {
+             // If the user document doesn't exist, create it.
+            const userDocRef = doc(firestore, 'users', user.uid);
+            await setDoc(
+                userDocRef,
+                {
+                uid: user.uid,
+                email: user.email,
+                displayName: 'Admin',
+                roles: ['admin'],
+                },
+                { merge: true }
+            );
+            toast({
+                title: 'Admin Login Successful',
+                description: 'Welcome, Admin!',
+            });
+            router.push('/admin');
+        }
       }
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
@@ -133,12 +156,8 @@ export default function AdminLoginPage() {
                     placeholder="ADMIN"
                     required
                     className="pl-10"
-                    value={email === 'admin@example.com' ? 'admin' : email}
-                    onChange={(e) =>
-                      e.target.value === 'admin'
-                        ? setEmail('admin@example.com')
-                        : setEmail(e.target.value)
-                    }
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
@@ -160,7 +179,7 @@ export default function AdminLoginPage() {
                     placeholder="PASSWORD"
                     required
                     className="pl-10"
-                    value={password === '1122' ? '1122' : password}
+                    value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
