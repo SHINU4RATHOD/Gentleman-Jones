@@ -14,15 +14,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User, Lock } from 'lucide-react';
-import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useAuth, useFirestore } from '@/firebase';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { doc, getDoc } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('admin@example.com');
-  const [password, setPassword] = useState('password');
+  const [password, setPassword] = useState('1122');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
   const firestore = useFirestore();
@@ -34,13 +36,13 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     if (email !== 'admin@example.com' || password !== '1122') {
-        toast({
-            variant: "destructive",
-            title: "Invalid Credentials",
-            description: "Please use the default admin credentials to log in.",
-        });
-        setIsLoading(false);
-        return;
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Credentials',
+        description: 'Please use the default admin credentials to log in.',
+      });
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -70,27 +72,35 @@ export default function AdminLoginPage() {
       }
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
-         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            const userDocRef = doc(firestore, 'users', user.uid);
-            await setDoc(userDocRef, {
-                uid: user.uid,
-                email: user.email,
-                displayName: 'Admin',
-                roles: ['admin']
-            }, { merge: true });
-            toast({
-                title: "Admin Account Created",
-                description: "Welcome, Admin! Your account has been set up.",
-            });
-            router.push('/admin');
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+          const userDocRef = doc(firestore, 'users', user.uid);
+          await setDoc(
+            userDocRef,
+            {
+              uid: user.uid,
+              email: user.email,
+              displayName: 'Admin',
+              roles: ['admin'],
+            },
+            { merge: true }
+          );
+          toast({
+            title: 'Admin Account Created',
+            description: 'Welcome, Admin! Your account has been set up.',
+          });
+          router.push('/admin');
         } catch (creationError) {
-            toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: "Could not create admin user.",
-            });
+          toast({
+            variant: 'destructive',
+            title: 'Login Failed',
+            description: 'Could not create admin user.',
+          });
         }
       } else {
         toast({
