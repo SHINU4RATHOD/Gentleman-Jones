@@ -1,128 +1,22 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    /**
-     * @description Checks if the request is made by an authenticated user.
-     * @return {bool} True if the user is signed in, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
+    // By default, deny all reads and writes.
+    match /{document=**} {
+      allow read, write: if false;
     }
 
-    /**
-     * @description Checks if the authenticated user's UID matches the provided userId.
-     * @param {string} userId - The user ID to compare against.
-     * @return {bool} True if the user is the owner, false otherwise.
-     */
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if an admin role exists.
-     * @return {bool} True if the role exists, false otherwise.
-     */
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    /**
-     * @description Checks if the user is the owner and the resource exists.
-     * @param {string} userId - The user ID to compare against.
-     * @return {bool} True if the user is the existing owner, false otherwise.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource.data != null;
-    }
-
-    /**
-     * @description Enforces document ownership for writes.
-     * @path /categories/{categoryId}
-     * @allow (create) User with admin role creates a new category document.
-     * @deny (create) User without admin role attempts to create a new category document.
-     * @principle Restricts writes to admins.
-     */
-    match /categories/{categoryId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
-    }
-
-    /**
-     * @description Allows public read access to product information, but restricts writes.
-     * @path /products/{productId}
-     * @allow (get) Any user can read product information.
-     * @allow (list) Any user can list products.
-     * @deny (create) Any user attempts to create a new product.
-     * @principle Allows public read access with restricted writes.
-     */
-    match /products/{productId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
-    }
-
-    /**
-     * @description Restricts access to customer data to the authenticated user.
-     * @path /users/{userId}
-     * @allow (create) Authenticated user creates their own user document.
-     * @allow (get) Authenticated user retrieves their own user document.
-     * @deny (get) Authenticated user attempts to retrieve another user's document.
-     * @principle Enforces document ownership for reads and writes.
-     */
+    // Allow users to read their own user data.
+    // Allow authenticated users to create their own user data.
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow get: if request.auth.uid == userId;
+      allow create: if request.auth.uid == userId;
     }
 
-    /**
-     * @description Restricts access to customer orders to the authenticated user.
-     * @path /users/{userId}/orders/{orderId}
-     * @allow (create) Authenticated user creates a new order under their user document.
-     * @allow (get) Authenticated user retrieves their own order.
-     * @deny (get) Authenticated user attempts to retrieve another user's order.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId}/orders/{orderId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Restricts access to order items to the authenticated user.
-     * @path /users/{userId}/orders/{orderId}/order_items/{orderItemId}
-     * @allow (create) Authenticated user creates a new order item under their order.
-     * @allow (get) Authenticated user retrieves their own order item.
-     * @deny (get) Authenticated user attempts to retrieve another user's order item.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId}/orders/{orderId}/order_items/{orderItemId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Indicates admin role based on the existence of the document. No content required.
-     * @path /roles_admin/{uid}
-     */
-    match /roles_admin/{uid} {
-        allow get: if false;
-        allow list: if false;
-        allow create: if isSignedIn();
-        allow update: if false;
-        allow delete: if request.auth.uid == uid;
+    // Allow users to read and create their own purchase history.
+    match /users/{userId}/purchases/{purchaseId} {
+      allow read, create: if request.auth.uid == userId;
     }
   }
 }

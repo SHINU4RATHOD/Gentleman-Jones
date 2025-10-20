@@ -1,301 +1,110 @@
 {
   "entities": {
-    "Product": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Product",
+    "User": {
+      "title": "User",
+      "description": "A user of the application.",
       "type": "object",
-      "description": "Represents a product in the catalog.",
       "properties": {
-        "id": {
+        "uid": {
           "type": "string",
-          "description": "Unique identifier for the product."
-        },
-        "name": {
-          "type": "string",
-          "description": "Name of the product."
-        },
-        "description": {
-          "type": "string",
-          "description": "Detailed description of the product."
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "URL of the product image.",
-          "format": "uri"
-        },
-        "price": {
-          "type": "number",
-          "description": "Price of the product."
-        },
-        "categoryId": {
-          "type": "string",
-          "description": "Reference to Category. (Relationship: Category 1:N Product)"
-        },
-        "inventory": {
-          "type": "number",
-          "description": "Number of units currently in the store's inventory."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "description",
-        "imageUrl",
-        "price",
-        "categoryId",
-        "inventory"
-      ]
-    },
-    "Category": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Category",
-      "type": "object",
-      "description": "Represents a category of products.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the category."
-        },
-        "name": {
-          "type": "string",
-          "description": "Name of the category."
-        },
-        "description": {
-          "type": "string",
-          "description": "Description of the category."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "description"
-      ]
-    },
-    "Order": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Order",
-      "type": "object",
-      "description": "Represents a customer order.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the order."
-        },
-        "customerId": {
-          "type": "string",
-          "description": "Reference to Customer. (Relationship: Customer 1:N Order)"
-        },
-        "orderDate": {
-          "type": "string",
-          "description": "Date the order was placed.",
-          "format": "date-time"
-        },
-        "totalAmount": {
-          "type": "number",
-          "description": "Total amount of the order."
-        },
-        "status": {
-          "type": "string",
-          "description": "Status of the order (e.g., pending, processing, shipped, delivered)."
-        }
-      },
-      "required": [
-        "id",
-        "customerId",
-        "orderDate",
-        "totalAmount",
-        "status"
-      ]
-    },
-    "OrderItem": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "OrderItem",
-      "type": "object",
-      "description": "Represents an item within an order.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the order item."
-        },
-        "orderId": {
-          "type": "string",
-          "description": "Reference to Order. (Relationship: Order 1:N OrderItem)"
-        },
-        "productId": {
-          "type": "string",
-          "description": "Reference to Product. (Relationship: Product 1:N OrderItem)"
-        },
-        "quantity": {
-          "type": "number",
-          "description": "Quantity of the product in the order item."
-        },
-        "itemPrice": {
-          "type": "number",
-          "description": "Price of a single item in the order item."
-        }
-      },
-      "required": [
-        "id",
-        "orderId",
-        "productId",
-        "quantity",
-        "itemPrice"
-      ]
-    },
-    "Customer": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Customer",
-      "type": "object",
-      "description": "Represents a customer.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the customer."
-        },
-        "firstName": {
-          "type": "string",
-          "description": "First name of the customer."
-        },
-        "lastName": {
-          "type": "string",
-          "description": "Last name of the customer."
+          "description": "The user's unique ID."
         },
         "email": {
           "type": "string",
-          "description": "Email address of the customer.",
-          "format": "email"
+          "format": "email",
+          "description": "The user's email address."
         },
-        "address": {
+        "displayName": {
           "type": "string",
-          "description": "Customer's address."
+          "description": "The user's display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URL of the user's profile picture."
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "admin"
+            ]
+          }
         }
       },
       "required": [
-        "id",
-        "firstName",
-        "lastName",
-        "email",
-        "address"
+        "uid",
+        "email"
+      ]
+    },
+    "Purchase": {
+      "title": "Purchase",
+      "description": "A record of a user's purchase.",
+      "type": "object",
+      "properties": {
+        "purchaseId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "number"
+              },
+              "price": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "productId",
+              "quantity",
+              "price"
+            ]
+          }
+        },
+        "total": {
+          "type": "number"
+        },
+        "purchaseDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "purchaseId",
+        "userId",
+        "items",
+        "total",
+        "purchaseDate"
       ]
     }
   },
   "auth": {
     "providers": [
-      "password",
       "anonymous"
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/categories/{categoryId}",
-        "definition": {
-          "entityName": "Category",
-          "schema": {
-            "$ref": "#/backend/entities/Category"
-          },
-          "description": "Stores product categories.  Admin access is controlled via /roles_admin/{uid}.",
-          "params": [
-            {
-              "name": "categoryId",
-              "description": "The unique identifier for the category."
-            }
-          ]
-        }
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
       },
-      {
-        "path": "/products/{productId}",
-        "definition": {
-          "entityName": "Product",
-          "schema": {
-            "$ref": "#/backend/entities/Product"
-          },
-          "description": "Stores product information. Read access is public.",
-          "params": [
-            {
-              "name": "productId",
-              "description": "The unique identifier for the product."
-            }
-          ]
-        }
+      "description": "Stores user profile information."
+    },
+    "/users/{userId}/purchases/{purchaseId}": {
+      "schema": {
+        "$ref": "#/entities/Purchase"
       },
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "Customer",
-          "schema": {
-            "$ref": "#/backend/entities/Customer"
-          },
-          "description": "Stores customer data.  Access is restricted to the authenticated user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the customer (equal to Firebase Auth UID)."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/orders/{orderId}",
-        "definition": {
-          "entityName": "Order",
-          "schema": {
-            "$ref": "#/backend/entities/Order"
-          },
-          "description": "Stores customer orders. Access is restricted to the authenticated user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the customer (equal to Firebase Auth UID)."
-            },
-            {
-              "name": "orderId",
-              "description": "The unique identifier for the order."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/orders/{orderId}/order_items/{orderItemId}",
-        "definition": {
-          "entityName": "OrderItem",
-          "schema": {
-            "$ref": "#/backend/entities/OrderItem"
-          },
-          "description": "Stores items within an order. Access is restricted to the authenticated user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the customer (equal to Firebase Auth UID)."
-            },
-            {
-              "name": "orderId",
-              "description": "The unique identifier for the order."
-            },
-            {
-              "name": "orderItemId",
-              "description": "The unique identifier for the order item."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_admin/{uid}",
-        "definition": {
-          "entityName": "role_admin",
-          "schema": {
-            "$ref": "#/backend/entities/Customer"
-          },
-          "description": "Indicates admin role based on the existence of the document. No content required.",
-          "params": [
-            {
-              "name": "uid",
-              "description": "The Firebase Auth UID of the admin user."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The Firestore structure is designed to be secure, scalable, and easily debuggable, following the core design principles and strategy mandates. It avoids hierarchical authorization dependencies by denormalizing authorization data, ensuring each document contains the necessary information for access control. Structural segregation is used to maintain a homogeneous security posture within collections.  Access modeling employs path-based ownership for user-related data and existence-based global roles. Data clarity is achieved through explicit state modeling and predictable schemas.\n\nSpecifically:\n\n*   **Categories:** Categories are stored in a root-level collection. Since these are likely managed by admins, a separate `/roles_admin/{uid}` collection will be used for admin authentication. This segregation ensures only admins can create/modify categories. `list` operations are secure because there are no client write operations.\n*   **Products:** Products are also stored in a root-level collection. The `categoryId` field facilitates filtering and display. The structure supports QAPs since read access to products is public.\n*   **Customers:** Customers are stored in a `/users/{uid}` collection, leveraging path-based ownership. This ensures that only the authenticated user can access their customer data.\n*   **Orders:** Orders are stored in a subcollection under `/users/{uid}/orders/{orderId}`. This reflects the 1:N relationship between Customers and Orders and enforces ownership.\n*   **OrderItems:** OrderItems are stored in a subcollection under `/users/{uid}/orders/{orderId}/order_items/{orderItemId}`. This nested structure maintains the 1:N relationship between Orders and OrderItems and continues to enforce ownership inherited from the Order.\n\nThis design supports all the required features, including product catalog display, shopping cart functionality, secure checkout, user authentication, and admin dashboard capabilities."
+      "description": "Stores the purchase history for a user."
+    }
   }
 }

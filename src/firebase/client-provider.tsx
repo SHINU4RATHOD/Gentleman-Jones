@@ -1,26 +1,30 @@
 'use client';
 
-import React, { useMemo, type ReactNode } from 'react';
-import { FirebaseProvider } from '@/firebase/provider';
-import { initializeFirebase } from '@/firebase';
+import {useEffect, useState, type PropsWithChildren} from 'react';
+import {FirebaseProvider} from './provider';
 
-interface FirebaseClientProviderProps {
-  children: ReactNode;
-}
+/**
+ * Provides a Firebase context to its children, ensuring that Firebase is only
+ * initialized on the client side. This is crucial for frameworks like Next.js
+ * that use Server-Side Rendering (SSR).
+ *
+ * The provider defers rendering of its children until the component has mounted
+ * on the client, preventing Firebase from being initialized on the server.
+ *
+ * @param {PropsWithChildren} props The properties for the component, including children.
+ * @returns {JSX.Element | null} The FirebaseProvider with children, or null if not mounted.
+ */
+export function FirebaseClientProvider({children}: PropsWithChildren) {
+  const [isMounted, setIsMounted] = useState(false);
 
-export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
-  const firebaseServices = useMemo(() => {
-    // Initialize Firebase on the client side, once per component mount.
-    return initializeFirebase();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  return (
-    <FirebaseProvider
-      firebaseApp={firebaseServices.firebaseApp}
-      auth={firebaseServices.auth}
-      firestore={firebaseServices.firestore}
-    >
-      {children}
-    </FirebaseProvider>
-  );
+  // Render children only after the component has mounted on the client.
+  if (!isMounted) {
+    return null;
+  }
+
+  return <FirebaseProvider>{children}</FirebaseProvider>;
 }

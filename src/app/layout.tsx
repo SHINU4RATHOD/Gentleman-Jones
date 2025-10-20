@@ -4,6 +4,7 @@ import { AppHeader } from '@/components/header';
 import { AppFooter } from '@/components/footer';
 import { CartProvider } from '@/contexts/cart-context';
 import { Toaster } from '@/components/ui/toaster';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: 'Gentleman Jones',
@@ -23,12 +24,14 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
-        <CartProvider>
-          <AppHeader />
-          <main className="flex-grow">{children}</main>
-          <AppFooter />
-          <Toaster />
-        </CartProvider>
+        <FirebaseClientProvider>
+          <CartProvider>
+            <AppHeader />
+            <main className="flex-grow">{children}</main>
+            <AppFooter />
+            <Toaster />
+          </CartProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );
