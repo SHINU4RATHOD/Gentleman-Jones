@@ -1,3 +1,76 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero",
+      "description": "Stylish man in a well-lit, modern but classic room",
+      "imageUrl": "https://images.unsplash.com/photo-1574502482076-933de46e26eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzdHlsaXNoJTIwbWFufGVufDB8fHx8MTc2MDg2MDIzM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stylish man"
+    },
+    {
+      "id": "suit1",
+      "description": "A classic navy blue wool suit.",
+      "imageUrl": "https://images.unsplash.com/photo-1593030103066-0093718efeb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtZW5zJTIwc3VpdHxlbnwwfHx8fDE3NjA4OTg1MDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mens suit"
+    },
+    {
+      "id": "suit2",
+      "description": "A modern charcoal grey slim-fit suit.",
+      "imageUrl": "https://images.unsplash.com/photo-1717730798531-6a62ed43b871?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtZW5zJTIwc3VpdHxlbnwwfHx8fDE3NjA4OTg1MDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mens suit"
+    },
+    {
+      "id": "shirt1",
+      "description": "A crisp white cotton dress shirt.",
+      "imageUrl": "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxkcmVzcyUyMHNoaXJ0fGVufDB8fHx8MTc2MDkyNzk5NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dress shirt"
+    },
+    {
+      "id": "shirt2",
+      "description": "A light blue oxford cloth button-down shirt.",
+      "imageUrl": "https://images.unsplash.com/photo-1688573156881-c6ae02ef0a32?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkcmVzcyUyMHNoaXJ0fGVufDB8fHx8MTc2MDkyNzk5NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dress shirt"
+    },
+    {
+      "id": "shoes1",
+      "description": "Classic black leather oxford shoes.",
+      "imageUrl": "https://images.unsplash.com/photo-1638609348722-aa2a3a67db26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwc2hvZXN8ZW58MHx8fHwxNzYwODgxODUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather shoes"
+    },
+    {
+      "id": "shoes2",
+      "description": "Stylish brown leather brogues.",
+      "imageUrl": "https://images.unsplash.com/photo-1616406432452-07bc5938759d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsZWF0aGVyJTIwc2hvZXN8ZW58MHx8fHwxNzYwODgxODUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather shoes"
+    },
+    {
+      "id": "tie1",
+      "description": "A luxurious burgundy silk tie.",
+      "imageUrl": "https://images.unsplash.com/photo-1617238749996-ab4c0f9fba57?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzaWxrJTIwdGllfGVufDB8fHx8MTc2MDkyNzk5NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "silk tie"
+    },
+    {
+      "id": "watch1",
+      "description": "A sophisticated silver watch with a leather strap.",
+      "imageUrl": "https://images.unsplash.com/photo-1548169874-53e85f753f1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsdXh1cnklMjB3YXRjaHxlbnwwfHx8fDE3NjA4NTAxODF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "luxury watch"
+    },
+    {
+      "id": "briefcase1",
+      "description": "A vintage-style leather briefcase.",
+      "imageUrl": "https://images.unsplash.com/photo-1549943872-1af399ac7e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bGVhdGhlciUyMGJyaWVmY2FzZXxlbnwwfHx8fDE3NjA4NTU0MjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather briefcase"
+    },
+    {
+      "id": "suit3",
+      "description": "A double-breasted pinstripe suit.",
+      "imageUrl": "https://images.unsplash.com/photo-1605896403575-8b987c86d449?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaW5zdHJpcGUlMjBzdWl0fGVufDB8fHx8MTc2MDkyNzk5NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pinstripe suit"
+    },
+    {
+      "id": "shoes3",
+      "description": "Suede loafers for a casual but smart look.",
+      "imageUrl": "https://images.unsplash.com/photo-1715525295763-a423d6dda172?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3VlZGUlMjBsb2FmZXJzfGVufDB8fHx8MTc2MDgzNDYyOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "suede loafers"
+    }
+  ]
 }
