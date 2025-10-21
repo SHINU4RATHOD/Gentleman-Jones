@@ -149,4 +149,4 @@ Visit [http://localhost:9002](http://localhost:9002) in your browser.
 ---
 
 ## 📬 Need Help?
-If you get stuck, open an issue on GitHub or ask for help in the project discussions!
+If you get stuck, open an issue on GitHub or ask for help in the project discussions
